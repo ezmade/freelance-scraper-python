@@ -4,6 +4,7 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup
 from user_agent import generate_user_agent
 from time import sleep
+from datetime import datetime
 
 def get_order_data(order):
     order_title = order.find('div', {'class': 'p_title'}).find('a', {'class': 'ptitle'}).text.strip()
@@ -14,11 +15,13 @@ def get_order_data(order):
     order_answers = int(order.find('ul', {'class': 'list-inline'}).find('li', {'class': 'proj-inf messages pull-left'}).find('i').text.strip())
     order_status = order.find('ul', {'class': 'list-inline'}).find('li', {'class': 'proj-inf status pull-left'}).text.strip()
     
+    date_str = order_date[:6] + '20' + order_date[6:]
+
     result = {
         'title': order_title,
         'task': order_task,
         'cost': order_cost,
-        'date': order_date,
+        'date': datetime.strptime(date_str, '%d.%m.%Y').date(),
         'views': order_views,
         'answers': order_answers,
         'status': order_status
@@ -27,14 +30,9 @@ def get_order_data(order):
     return result
 
 url = 'https://freelance.ru/projects/filter/'
-proxies = {
-    'http': 'http://10.10.0.0.0000',
-    'https': 'http://120.10.0.0.0000'
-}
 headers = {
     'User-agent': generate_user_agent(device_type='desktop', os=('mac', 'linux'))
 }
-
 orders = []
 page = 1
 
@@ -57,9 +55,6 @@ for i in tqdm(range(50)):
     except requests.Timeout as e:
         print('It is time to timeout')
         print(str(e))
-
-    except Exception:
-        print('Something goes wrong!')
 
     sleep(20)
 
