@@ -15,8 +15,18 @@ def get_order_data(order):
     order_answers = int(order.find('ul', {'class': 'list-inline'}).find('li', {'class': 'proj-inf messages pull-left'}).find('i').text.strip())
     order_status = order.find('ul', {'class': 'list-inline'}).find('li', {'class': 'proj-inf status pull-left'}).text.strip()
     
-    date_str = order_date[:6] + '20' + order_date[6:]
+    if len(order_date) == 0:
+        order_date = '01.01.1970'
+    elif len(order_date) < 8:
+        order_date = '0' + order_date
 
+    if len(order_date) < 9:
+        date_str = order_date[:6] + '20' + order_date[6:]
+    else:
+        date_str = order_date
+    
+    print(date_str)
+    
     result = {
         'title': order_title,
         'task': order_task,
@@ -56,7 +66,7 @@ for i in tqdm(range(50)):
         print('It is time to timeout')
         print(str(e))
 
-    sleep(20)
+    sleep(6)
 
 df = pd.DataFrame(orders)
 df.to_csv('freelanceOrders.csv', index=False)
