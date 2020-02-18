@@ -10,22 +10,23 @@ def get_order_data(order):
     order_title = order.find('div', {'class': 'p_title'}).find('a', {'class': 'ptitle'}).text.strip()
     order_task = order.find('a', {'class': 'descr'}).find_all('span')[1].text.strip()
     order_cost = order.find('a', {'class': 'descr'}).find('b').text[8:].strip()
-    order_date = order.find('ul', {'class': 'list-inline'}).find('li').text[8:].strip()
+    order_date = order.find('ul', {'class': 'list-inline'}).find('li').text
+    if len(order_date) > 10:
+        order_date = order_date[8:].strip()
+    else: 
+        order_date = order_date.strip()
     order_views = int(order.find('ul', {'class': 'list-inline'}).find('li', {'class': 'proj-inf views pull-left'}).text[11:].strip())
     order_answers = int(order.find('ul', {'class': 'list-inline'}).find('li', {'class': 'proj-inf messages pull-left'}).find('i').text.strip())
     order_status = order.find('ul', {'class': 'list-inline'}).find('li', {'class': 'proj-inf status pull-left'}).text.strip()
     
-    if len(order_date) == 0:
-        order_date = '01.01.1970'
-    elif len(order_date) < 8:
+    if len(order_date) < 8:
         order_date = '0' + order_date
 
     if len(order_date) < 9:
         date_str = order_date[:6] + '20' + order_date[6:]
     else:
         date_str = order_date
-    
-    print(date_str)
+
     
     result = {
         'title': order_title,
